@@ -1,0 +1,21 @@
+# ETL 및 데이터 처리
+pandas
+numpy
+
+# Supabase 클라이언트
+supabase
+
+# Google AI
+google-generativeai
+
+# 환경변수 관리
+python-dotenv
+
+# HTTP 요청
+requests
+
+# 로깅
+loguru
+
+# 타입 힌트
+typing-extensions
