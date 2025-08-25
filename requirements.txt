@@ -53,3 +53,6 @@ tqdm>=4.66.0
 # Configuration management
 pyyaml>=6.0.0
 toml>=0.10.0
+
+# GUI drag and drop support
+tkinterdnd2>=0.3.0
