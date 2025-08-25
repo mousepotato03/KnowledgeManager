@@ -1,0 +1,135 @@
+# RAG Indexing Configuration
+# This file contains default settings for the RAG indexing pipeline
+
+# Document Processing Settings
+processing:
+  chunk_size: 1000              # Maximum tokens per chunk
+  chunk_overlap: 200            # Overlap between chunks in tokens
+  min_chunk_size: 100          # Minimum chunk size to keep
+  max_chunk_size: 2000         # Maximum chunk size
+  processing_version: "1.0"     # Version to track processing changes
+  
+  # Embedding configuration
+  embedding_model: "text-embedding-004"  # Google AI embedding model
+  
+  # Performance settings
+  batch_size: 10               # Number of chunks to process at once
+  rate_limit_delay: 0.1        # Seconds between API calls
+  max_retries: 3               # Maximum retry attempts for failed operations
+
+# Database Settings
+database:
+  # Connection settings are loaded from environment variables
+  # NEXT_PUBLIC_SUPABASE_URL
+  # SUPABASE_SERVICE_ROLE_KEY
+  
+  # Table configuration
+  chunk_table: "rag_knowledge_chunks"
+  tools_table: "tools"
+  
+  # Query settings
+  similarity_threshold: 0.78    # Minimum similarity for matches
+  max_matches: 10              # Maximum matches to return
+  
+# Logging Configuration
+logging:
+  level: "INFO"                # DEBUG, INFO, WARNING, ERROR
+  console_format: "<green>{time:HH:mm:ss}</green> | <level>{level: <8}</level> | <level>{message}</level>"
+  file_format: "{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {name}:{function}:{line} - {message}"
+  log_file: "logs/rag_indexer.log"
+  max_file_size: "10 MB"
+  retention: "1 week"
+  rotation: "10 MB"
+
+# Source Type Configuration
+source_types:
+  pdf:
+    extensions: [".pdf"]
+    description: "PDF documents"
+    processors: ["pdfplumber", "pypdf2"]
+    
+  url:
+    patterns: ["http://", "https://"]
+    description: "Web URLs"
+    timeout: 30
+    user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    
+  text:
+    extensions: [".txt", ".md", ".markdown"]
+    description: "Plain text and markdown files"
+    encodings: ["utf-8", "latin1", "cp1252", "iso-8859-1"]
+    
+  document:
+    extensions: [".doc", ".docx"]
+    description: "Microsoft Word documents"
+    
+# Quality Scoring Configuration
+quality:
+  base_score: 0.5
+  length_bonus:
+    optimal_min: 200
+    optimal_max: 1500
+    bonus: 0.2
+  structure_indicators:
+    - "however"
+    - "therefore" 
+    - "because"
+    - "furthermore"
+    - "additionally"
+    - "consequently"
+  technical_indicators:
+    - "api"
+    - "feature"
+    - "integration"
+    - "performance"
+    - "configuration"
+    - "implementation"
+  sentence_range:
+    min: 3
+    max: 10
+    bonus: 0.1
+
+# Data Source Management
+data_sources:
+  base_directory: "data_sources"
+  organization:
+    by_tool: true              # Organize by tool directories
+    by_date: false             # Include date in organization
+  
+  # File naming conventions
+  naming:
+    include_date: true
+    include_source_type: true
+    sanitize_names: true
+
+# Batch Processing
+batch:
+  supported_formats: ["json", "csv"]
+  required_fields: ["source_path", "tool_id"]
+  optional_fields: ["source_type", "title", "metadata"]
+  
+  # Sample batch file fields
+  sample_config:
+    - source_path: "./data_sources/example_tool/guide.pdf"
+      tool_id: "uuid-example-1234"
+      source_type: "pdf"
+      title: "Example Tool User Guide"
+    - source_path: "https://example.com/documentation"
+      tool_id: "uuid-example-1234" 
+      source_type: "url"
+      title: "Official Documentation"
+
+# Error Handling
+error_handling:
+  retry_delays: [1, 2, 4]      # Exponential backoff delays in seconds
+  ignore_duplicate_hashes: true
+  continue_on_chunk_failure: true
+  report_summary: true
+
+# Security and Validation
+security:
+  validate_urls: true
+  allowed_domains: []          # Empty means all domains allowed
+  blocked_domains: []          # Domains to block
+  max_file_size: "50MB"       # Maximum file size to process
+  scan_for_sensitive_data: false
